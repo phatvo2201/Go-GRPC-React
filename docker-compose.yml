@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+
+  walletservice:
+    build: 
+      context: ./wallet
+      dockerfile: Dockerfile
+      
+    ports:
+      - 9090:9090
+    environment:
+      - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/
+    depends_on:
+      - mongodb_container
+  
+  authservice:
+    build: 
+      context: ./userinfo
+      dockerfile: Dockerfile
+      
+    ports:
+      - 9091:9091
+    environment:
+      - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/
+    depends_on:
+      - mongodb_container
+
+  gateservice:
+    build: 
+      context: ./gateway
+      dockerfile: Dockerfile
+      
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongodb_container
+    
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:

@@ -1,0 +1,91 @@
+syntax = "proto3";
+package pb;
+option go_package = "github.com/phatbb/userinfo";
+import "userservice.proto";
+import "google/api/annotations.proto";
+
+message SignUpUserInput {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+    string passwordConfirm = 4;
+
+}
+
+message SignUpUserResponse { User user = 1;Wallet wallet =2; Error error =3;}
+message Error {
+  string code = 1;
+  string message = 2;
+}
+
+//signup
+
+message SignInUserInput {
+    string email = 1;
+    string password = 2;
+}
+
+message SignInUserResponse { 
+    
+    string status =1;
+    string access_token =2;
+    string refresh_token =3;
+
+}
+service SimpleBank {
+    rpc SignUpUser(SignUpUserInput) returns (SignUpUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/create_user"
+            body: "*"
+        };
+		// option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+		// 	description: "Use this API to create a new user";
+		// 	summary: "Create new user";
+        // };
+    }
+    rpc SignInUser(SignInUserInput) returns (SignInUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/login_user"
+            body: "*"
+        };
+		// option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+		// 	description: "Use this API to login user and get access token & refresh token";
+		// 	summary: "Login user";
+        // };
+
+    }
+    rpc VerifyEmail(VerifyEmailRequest) returns (GenericResponse){
+        option (google.api.http) = {
+            post: "/v1/user/verifyemail"
+            body: "*"
+        };
+
+    }
+    rpc RefreshToken(RefrehEmpty) returns (SignInUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/refresh"
+            body: "*"
+        };
+		// option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+		// 	description: "Use this API to create a new user";
+		// 	summary: "Create new user";
+        // };
+    }
+    rpc VerifyOwner(TokenAndEmail) returns (GenericResponse){
+       
+    };
+}
+message TokenAndEmail{
+    string Email =1;
+    string Token =2;
+}
+
+message VerifyEmailRequest { string verificationCode = 1; string userid =2; }
+message GenericResponse {
+    string status = 1;
+    string message = 2;
+  }
+
+message RefrehEmpty {
+
+}

@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  walletservice:
+    build: 
+      context: ./wallet
+      dockerfile: Dockerfile
+      
+    ports:
+      - 9090:9090
+    environment:
+      - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/?authMechanism=DEFAULT
+    depends_on:
+      - mongodb_container
+
+  client:
+        build: ./UI2
+        command: npm start
+        volumes:
+            - ./client:/usr/src/app
+            # mount node_modules as a workaround for it disappearing
+            # after adding /client as a mounted folder
+            - /usr/src/app/node_modules
+        ports:
+            - "3000:3000"
+    
+
+
+mongodb_container:
+  image: mongo:latest
+  environment:
+    MONGO_INITDB_ROOT_USERNAME: root
+    MONGO_INITDB_ROOT_PASSWORD: rootpassword
+  ports:
+    - 27017:27017
+  volumes:
+    - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
