@@ -48,6 +48,7 @@ func ParseTemplateDir(dir string) (*template.Template, error) {
 
 func SendEmail(user *models.DBResponse, data *EmailData, templateName string) error {
 	config, err := config.LoadConfig(".")
+	// config, err := config.LoadConfig("../")
 
 	if err != nil {
 		log.Fatal("could not load config", err)

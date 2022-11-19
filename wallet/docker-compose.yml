@@ -12,6 +12,8 @@ services:
       - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/?authMechanism=DEFAULT
     depends_on:
       - mongodb_container
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
 
   client:
         build: ./UI2
@@ -23,6 +25,8 @@ services:
             - /usr/src/app/node_modules
         ports:
             - "3000:3000"
+        extra_hosts:
+          - "host.docker.internal:host-gateway"
     
 
 
@@ -35,6 +39,8 @@ mongodb_container:
     - 27017:27017
   volumes:
     - mongodb_data_container:/data/db
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
 
 volumes:
   mongodb_data_container:

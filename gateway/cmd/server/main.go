@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	grpcUserServerEndpoint = flag.String("grpc-user-server-endpoint", "192.168.5.33:9091", "gRPC user server endpoint")
-	grpcAuthServerEndpoint = flag.String("grpc-auth-server-endpoint", "192.168.5.33:9090", "gRPC auth server endpoint")
+	grpcUserServerEndpoint = flag.String("grpc-user-server-endpoint", "host.docker.internal:9091", "gRPC user server endpoint")
+	grpcAuthServerEndpoint = flag.String("grpc-auth-server-endpoint", "host.docker.internal:9090", "gRPC auth server endpoint")
 )
 
 func run() error {
@@ -43,7 +43,7 @@ func run() error {
 	err := userinfo.RegisterUserServiceHandlerFromEndpoint(ctx, mux, *grpcUserServerEndpoint, opts)
 	log.Println("regis gate way with user handler rpc")
 	if err != nil {
-		log.Fatal("can not regis gw")
+		log.Fatal("can not regis user gw")
 	}
 
 	err = userinfo.RegisterSimpleBankHandlerFromEndpoint(ctx, mux, *grpcAuthServerEndpoint, opts)
@@ -51,13 +51,7 @@ func run() error {
 	if err != nil {
 		log.Fatal("can not regis gw")
 	}
-	// err = userinfo.(ctx, mux, *grpcServerEndpoint, opts)
-	// log.Println("regis gate way with user handler rpc")
-	// if err != nil {
-	// 	log.Fatal("can not regis gw")
-	// }
 
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	return http.ListenAndServe(":8080", handler)
 }
 func main() {

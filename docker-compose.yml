@@ -1,5 +1,14 @@
 version: '3.7'
 
+networks:
+  backend:
+  # Use a backend service comunicate with 
+    driver: bridge
+  frontend:
+    # Use a front end comunicate with gateway
+    driver: bridge
+
+
 services:
 
   walletservice:
@@ -13,6 +22,10 @@ services:
       - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/
     depends_on:
       - mongodb_container
+    networks:
+      - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
   authservice:
     build: 
@@ -25,16 +38,26 @@ services:
       - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/
     depends_on:
       - mongodb_container
+    networks:
+      - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   gateservice:
     build: 
       context: ./gateway
       dockerfile: Dockerfile
+    networks:
+      - frontend
+      - backend
       
     ports:
       - 8080:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - mongodb_container
+  
     
   mongodb_container:
     image: mongo:latest
@@ -45,6 +68,28 @@ services:
       - 27017:27017
     volumes:
       - mongodb_data_container:/data/db
+    networks:
+      - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ui:
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    build:
+      dockerfile: Dockerfile.UI
+      context: ./UI2
+    volumes:
+      - /app/node_modules
+      - ./UI2:/app
+    networks:
+      - frontend
+    ports:
+      - 3000:3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 
 volumes:
   mongodb_data_container:

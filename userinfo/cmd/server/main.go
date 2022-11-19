@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	address = "192.168.5.33:9090"
+	address = "host.docker.internal:9090"
 )
 
 func accessibleRole() map[string][]string {
@@ -45,6 +45,8 @@ func startGrpcServer() {
 
 	verifyClient := implgrpc.NewVerifyUserClient(conn)
 	config, err := config.LoadConfig(".")
+	// config, err := config.LoadConfig("../")
+
 	if err != nil {
 		log.Fatalln("cant not load config from env")
 	}
