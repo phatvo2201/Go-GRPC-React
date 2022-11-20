@@ -11,25 +11,9 @@ networks:
 
 services:
 
-  walletservice:
+  userinfoservice:
     build: 
-      context: ./wallet
-      dockerfile: Dockerfile
-      
-    ports:
-      - 9090:9090
-    environment:
-      - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/
-    depends_on:
-      - mongodb_container
-    networks:
-      - backend
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-  
-  authservice:
-    build: 
-      context: ./userinfo
+      context: ./userinfoservice
       dockerfile: Dockerfile
       
     ports:
@@ -42,6 +26,26 @@ services:
       - backend
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - ./userinfoservice:/app
+  
+  authservice:
+    build: 
+      context: ./authenservice
+      dockerfile: Dockerfile
+      
+    ports:
+      - 9090:9090
+    environment:
+      - MONGODB_URI=mongodb://root:rootpassword@localhost:27017/
+    depends_on:
+      - mongodb_container
+    networks:
+      - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./authenservice:/app
 
   gateservice:
     build: 
@@ -57,6 +61,8 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - mongodb_container
+    volumes:
+      - ./gateway:/app
   
     
   mongodb_container:
