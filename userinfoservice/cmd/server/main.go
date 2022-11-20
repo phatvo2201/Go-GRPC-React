@@ -79,28 +79,6 @@ func startGrpcServer() {
 
 }
 
-// func startGrpcGateway(listener net.Listener) error {
-// 	mux := runtime.NewServeMux()
-// 	ctx, cancel := context.WithCancel(context.Background())
-// 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-
-// 	grpcServerEndpoint := flag.String("grpc-server-endpoint", "localhost:8080", "gRPC server endpoint")
-// 	err := userinfo.RegisterSimpleBankHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = userinfo.RegisterUserServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	defer cancel()
-
-// 	return http.Serve(listener, mux)
-
-// }
-
 var (
 	grpcServerEndpoint = flag.String("grpc-server-endpoint", "localhost:9091", "gRPC server endpoint")
 )

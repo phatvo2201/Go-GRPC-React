@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 
@@ -33,12 +32,6 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 
-		// type Req struct {
-		// 	email string
-		// 	role  string
-		// }
-		xType := fmt.Sprintf("%T aaaaaaaaaaaaaaaa", req)
-		log.Println(xType) // "[]int"
 		_, ok := req.(*wallet.GetInfoRequestGmail)
 		if ok {
 			log.Println("intercept for get email owner")
@@ -63,7 +56,6 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	}
 }
 func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string, email string) error {
-	log.Println("sadsadsadasdasdasd")
 	accessibleRoles, ok := interceptor.accessibleRoles[method]
 	if !ok {
 		// everyone can access
@@ -76,7 +68,6 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		return status.Errorf(codes.Unauthenticated, "access token is not provider1")
 
 	}
-	log.Println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ")
 	autheninfo := md["authorization"]
 	// log.Printf("this is the metadata %s", md)
 	if len(autheninfo) == 0 {
@@ -84,16 +75,12 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		return status.Errorf(codes.Unauthenticated, "access token is not provider2 %s xzczxczxc", method)
 	}
 
-	log.Println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx ")
-
 	accessToken := autheninfo[0]
 
 	// using the function
 	if strings.Contains(accessToken, "Bearer ") {
 		accessToken = accessToken[7:]
 	}
-
-	log.Printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx %s xxxxxxxxccasda ", accessToken)
 
 	claims, err := interceptor.jwtManager.Verify(accessToken)
 	if err != nil {
@@ -113,6 +100,7 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		}
 
 	}
+	//check role in token and in acessrole
 	for _, role := range accessibleRoles {
 		if role == claims.Role {
 			return nil

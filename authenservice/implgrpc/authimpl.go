@@ -98,6 +98,8 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserInput) 
 		firstName = strings.Split(firstName, " ")[0]
 	}
 
+	//data for email service
+
 	emailData := utils.EmailData{
 		URL:       as.config.Origin + "/verifyemail/" + code,
 		FirstName: firstName,
@@ -111,19 +113,8 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserInput) 
 
 	}
 
-	// log.Println("Repository persisted to the storage")
-	// wallet := &models.CreateWalletRequest{}
-	// wallet.UserId = newUser.ID
-
-	// newWallet, err := as.authService.SignWallet(wallet)
-	// if err != nil {
-	// 	log.Println("cant not creae wallet")
-	// }
-	// log.Println("cant not creae wallet" + newWallet.Currency)
-
 	return &wallet.SignUpUserResponse{
-		User: &wallet.User{Username: newUser.Name, Email: newUser.Email},
-		// Wallet: &wallet.Wallet{Balance: int64(newWallet.Balance)},
+		User:  &wallet.User{Username: newUser.Name, Email: newUser.Email},
 		Error: nil,
 	}, nil
 
