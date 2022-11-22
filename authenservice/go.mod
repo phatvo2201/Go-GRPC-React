@@ -9,7 +9,6 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/k3a/html2text v1.1.0
 	github.com/spf13/viper v1.13.0
-	github.com/thanhpk/randstr v1.0.4
 	go.mongodb.org/mongo-driver v1.11.0
 	golang.org/x/crypto v0.0.0-20220924013350-4ba4fb4dd9e7
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e

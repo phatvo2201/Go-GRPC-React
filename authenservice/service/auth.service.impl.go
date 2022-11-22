@@ -99,7 +99,3 @@ func (uc *AuthServiceImpl) SignInUser(user *models.SignUpInput) (*models.DBRespo
 	return nil, nil
 
 }
-func (uc *AuthServiceImpl) VerifyEmail(code string) (*models.DBResponse, error) {
-	return nil, nil
-
-}

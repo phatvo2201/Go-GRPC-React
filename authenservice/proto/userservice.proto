@@ -6,6 +6,30 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 
+service UserService {
+  rpc FindUserById(GetInfoRequestId) returns (User){
+    option (google.api.http) = {
+      post: "/api/v1/userinfo/get_user_by_id"
+      body: "*"
+    };
+
+  };
+  rpc FindUserByEmail(GetInfoRequestGmail) returns (User){
+    option (google.api.http) = {
+      post: "/api/v1/userinfo/get_user_by_email"
+      body: "*"
+    };
+
+  };
+  rpc GetUserWalletInfo(GetInfoRequestGmail) returns (Wallet){
+    option (google.api.http) = {
+      post: "/api/v1/userinfo/get_wallet"
+      body: "*"
+    };
+
+  };
+
+}
 
 
 
@@ -17,11 +41,16 @@ message User {
     google.protobuf.Timestamp password_changed_at = 5;
     google.protobuf.Timestamp created_at = 6;
 }
-message UserResponse { User user = 1;}
-message GetInfoRequest
-{
-string Id =1;
+
+message UserResponse {
+  User user = 1;
 }
+
+
+message GetInfoRequest {
+  string Id =1;
+}
+
 message Wallet {
   uint64 balance =1;
   string currency =2;
@@ -31,31 +60,6 @@ message Wallet {
 
 }
 
-
-service UserService {
-    rpc FindUserById(GetInfoRequestId) returns (User){
-        option (google.api.http) = {
-            post: "/v1/get_user"
-            body: "*"
-        };
-
-    };
-    rpc FindUserByEmail(GetInfoRequestGmail) returns (User){
-        option (google.api.http) = {
-            post: "/v1/get_user"
-            body: "*"
-        };
-
-    };
-    rpc GetUserWalletInfo(GetInfoRequestGmail) returns (Wallet){
-        option (google.api.http) = {
-            post: "/v1/get_wallet"
-            body: "*"
-        };
-
-    };
-    
-}
 message GetInfoRequestId
 {
   string Id =1;
@@ -65,5 +69,8 @@ message GetInfoRequestGmail
 {
   string Gmail =1;
 }
+
+
+
 
 

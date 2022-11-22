@@ -9,5 +9,4 @@ type AuthService interface {
 	SignInUser(*models.SignUpInput) (*models.DBResponse, error)
 
 	SignWallet(user *models.CreateWalletRequest) (*models.DBWallet, error)
-	VerifyEmail(code string) (*models.DBResponse, error)
 }

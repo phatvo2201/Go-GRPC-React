@@ -3,24 +3,19 @@ package implgrpc
 import (
 	"context"
 	"fmt"
-	"log"
-	"strings"
-	"time"
-
 	"github.com/phatbb/wallet/config"
 	"github.com/phatbb/wallet/models"
 	wallet "github.com/phatbb/wallet/pb"
 	"github.com/phatbb/wallet/service"
 	"github.com/phatbb/wallet/utils"
-	"github.com/thanhpk/randstr"
-
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"log"
+	"strings"
 )
 
 type AuthServer struct {
@@ -29,7 +24,7 @@ type AuthServer struct {
 	userService    service.UserService
 	userCollection *mongo.Collection
 	jwtManager     *utils.JWTManager
-	wallet.UnimplementedSimpleBankServer
+	wallet.UnimplementedAuthenServiceServer
 }
 
 func NewGrpcAuthServer(config config.Config, authService service.AuthService,
@@ -46,7 +41,7 @@ func NewGrpcAuthServer(config config.Config, authService service.AuthService,
 	return authServer, nil
 }
 
-func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserInput) (*wallet.SignUpUserResponse, error) {
+func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserRequest) (*wallet.SignUpUserResponse, error) {
 	log.Println("Received request for adding repository with id " + fmt.Sprintf("%s", ui.Username))
 	user := &models.SignUpInput{}
 
@@ -85,33 +80,46 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserInput) 
 	}
 	log.Println("Received request for adding repository with id " + fmt.Sprintf("%s %s has been created", newUser.Email, newUser.Name))
 
-	code := randstr.String(20)
-	verificationCode := utils.Encode(code)
-	updateData := &models.UpdateInput{
-		VerificationCode: verificationCode,
-	}
-	as.userService.UpdateUser(newUser.ID.Hex(), updateData)
-	//send email de user confirm
-	firstName := newUser.Name
+	//code := randstr.String(20)
+	//verificationCode := utils.Encode(code)
+	//updateData := &models.UpdateInput{
+	//	VerificationCode: verificationCode,
+	//}
+	//as.userService.UpdateUser(newUser.ID.Hex(), updateData)
+	////send email de user confirm
+	//firstName := newUser.Name
+	//
+	//if strings.Contains(firstName, " ") {
+	//	firstName = strings.Split(firstName, " ")[0]
+	//}
+	//
+	////data for email service
+	//
+	//emailData := utils.EmailData{
+	//	URL:       as.config.Origin + "/verifyemail/" + code,
+	//	FirstName: firstName,
+	//	Subject:   "verifycation code",
+	//}
+	//log.Println("this is phatbb1")
+	//
+	//err = utils.SendEmail(newUser, &emailData, "verificationCode.html")
+	//if err != nil {
+	//	return nil, status.Errorf(codes.Internal, "There was an error sending email: %s", err.Error())
+	//
+	//}
 
-	if strings.Contains(firstName, " ") {
-		firstName = strings.Split(firstName, " ")[0]
-	}
+	newuser, err := as.userService.FindUserByEmail(user.Email)
 
-	//data for email service
+	userId := newuser.ID
+	walletuser := &models.CreateWalletRequest{}
+	// oid, _ := primitive.ObjectIDFromHex(userId)
+	walletuser.UserId = userId
 
-	emailData := utils.EmailData{
-		URL:       as.config.Origin + "/verifyemail/" + code,
-		FirstName: firstName,
-		Subject:   "verifycation code",
-	}
-	log.Println("this is phatbb1")
-
-	err = utils.SendEmail(newUser, &emailData, "verificationCode.html")
+	newWallet, err := as.authService.SignWallet(walletuser)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "There was an error sending email: %s", err.Error())
-
+		log.Println("cant not creae wallet")
 	}
+	log.Printf("create wallet success", newWallet)
 
 	return &wallet.SignUpUserResponse{
 		User:  &wallet.User{Username: newUser.Name, Email: newUser.Email},
@@ -120,7 +128,7 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserInput) 
 
 }
 
-func (authServer *AuthServer) SignInUser(ctx context.Context, req *wallet.SignInUserInput) (*wallet.SignInUserResponse, error) {
+func (authServer *AuthServer) SignInUser(ctx context.Context, req *wallet.SignInUserRequest) (*wallet.SignInUserResponse, error) {
 	user, err := authServer.userService.FindUserByEmail(req.GetEmail())
 	log.Printf("this is your email %s", req.GetEmail())
 	if err != nil {
@@ -131,12 +139,6 @@ func (authServer *AuthServer) SignInUser(ctx context.Context, req *wallet.SignIn
 		}
 
 		return nil, status.Errorf(codes.Internal, err.Error())
-
-	}
-
-	if !user.Verified {
-
-		return nil, status.Errorf(codes.PermissionDenied, "You are not verified, please verify your email to login")
 
 	}
 
@@ -168,51 +170,7 @@ func (authServer *AuthServer) SignInUser(ctx context.Context, req *wallet.SignIn
 	return res, nil
 }
 
-func (as *AuthServer) VerifyEmail(ctx context.Context, in *wallet.VerifyEmailRequest) (*wallet.GenericResponse, error) {
-	code := in.GetVerificationCode()
-
-	verificationCode := utils.Encode(code)
-	var user models.DBResponse
-
-	query := bson.D{{Key: "verificationCode", Value: verificationCode}}
-
-	err := as.userCollection.FindOne(context.TODO(), query).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			// This error means your query did not match any documents.
-			return nil, err
-		}
-		panic(err)
-	}
-
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "verified", Value: true}, {Key: "updated_at", Value: time.Now()}}}, {Key: "$unset", Value: bson.D{{Key: "verificationCode", Value: ""}}}}
-	result, err := as.userCollection.UpdateOne(ctx, query, update)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
-	}
-
-	if result.MatchedCount == 0 {
-		return nil, status.Errorf(codes.PermissionDenied, "Could not verify email address")
-	}
-	//nen get user theo verification code
-	// userId := in.GetUserid()
-	userId := user.ID
-	walletuser := &models.CreateWalletRequest{}
-	// oid, _ := primitive.ObjectIDFromHex(userId)
-	walletuser.UserId = userId
-
-	newWallet, err := as.authService.SignWallet(walletuser)
-	if err != nil {
-		log.Println("cant not creae wallet")
-	}
-
-	res := &wallet.GenericResponse{
-		Status:  "success",
-		Message: "create user and wallet success with balance" + fmt.Sprintf("%s", newWallet.Balance),
-	}
-	return res, nil
-}
-func (as *AuthServer) FindUserById(ctx context.Context, in *wallet.GetInfoRequest) (*wallet.UserResponse, error) {
+func (as *AuthServer) FindUserById(ctx context.Context, in *wallet.GetInfoRequestId) (*wallet.UserResponse, error) {
 
 	id := in.GetId()
 	user, err := as.userService.FindUserById(id)
@@ -276,34 +234,4 @@ func (as *AuthServer) RefreshToken(ctx context.Context, req *wallet.RefrehEmpty)
 	}
 
 	return res, nil
-}
-func (as *AuthServer) VerifyOwner(ctx context.Context, in *wallet.TokenAndEmail) (*wallet.GenericResponse, error) {
-	accessToken := in.GetToken()
-	email := in.GetEmail()
-
-	claims, err := as.jwtManager.Verify(accessToken)
-	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
-	}
-	log.Println(claims.Email)
-
-	log.Printf("hellooo %s", email)
-
-	log.Printf("hellooo %s", claims.Email)
-
-	if email != "" {
-		if claims.Email != email {
-			log.Println("lol")
-			return nil, status.Errorf(codes.Unauthenticated, "you can not have permissccess this info : %v", err)
-
-		}
-
-	}
-	res := &wallet.GenericResponse{
-		Status:  "success",
-		Message: "verify OK",
-	}
-
-	return res, nil
-
 }

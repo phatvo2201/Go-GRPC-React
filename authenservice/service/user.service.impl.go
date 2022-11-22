@@ -2,13 +2,10 @@ package service
 
 import (
 	"context"
-	"errors"
-
 	"github.com/phatbb/wallet/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserServiceImpl struct {
@@ -68,27 +65,6 @@ func (uc *UserServiceImpl) FindWalletByOwner(email string) (*models.DBWallet, er
 }
 
 // VerifyEmaila implements UserService
-func (uc *UserServiceImpl) UpdateUser(id string, updateData *models.UpdateInput) (*models.DBResponse, error) {
-	var doc *bson.D
-	dbupdate, err := bson.Marshal(updateData)
-	if err != nil {
-		return nil, err
-	}
-	err = bson.Unmarshal(dbupdate, &doc)
-
-	obId, _ := primitive.ObjectIDFromHex(id)
-
-	query := bson.D{{Key: "_id", Value: obId}}
-	update := bson.D{{Key: "$set", Value: doc}}
-	result := uc.usercollection.FindOneAndUpdate(uc.ctx, query, update, options.FindOneAndUpdate().SetReturnDocument(1))
-
-	var updatedUser *models.DBResponse
-	if err := result.Decode(&updatedUser); err != nil {
-		return nil, errors.New("no document with that id exists")
-	}
-
-	return updatedUser, nil
-}
 
 func (uc *UserServiceImpl) FindWallet(userId primitive.ObjectID) (*models.DBWallet, error) {
 	var wallet *models.DBWallet
