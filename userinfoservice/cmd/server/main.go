@@ -41,8 +41,10 @@ func startGrpcServer() {
 	if err != nil {
 		log.Println("this is error from client side")
 	}
+	defer conn.Close()
 	log.Println("connect  auth grpc server success")
 
+	//create grpc client to call another grpc server authen to check email owner and verify token
 	verifyClient := implgrpc.NewVerifyUserClient(conn)
 	config, err := config.LoadConfig(".")
 	// config, err := config.LoadConfig("../")
@@ -80,6 +82,7 @@ func startGrpcServer() {
 }
 
 var (
+	//start userinfo grpc server handler
 	grpcServerEndpoint = flag.String("grpc-server-endpoint", "localhost:9091", "gRPC server endpoint")
 )
 
