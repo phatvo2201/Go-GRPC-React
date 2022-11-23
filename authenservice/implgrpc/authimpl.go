@@ -20,14 +20,14 @@ import (
 
 type AuthServer struct {
 	config         config.Config
-	authService    service.AuthService
+	authService    *service.AuthServiceImpl
 	userService    service.UserService
 	userCollection *mongo.Collection
 	jwtManager     *utils.JWTManager
 	wallet.UnimplementedAuthenServiceServer
 }
 
-func NewGrpcAuthServer(config config.Config, authService service.AuthService,
+func NewGrpcAuthServer(config config.Config, authService *service.AuthServiceImpl,
 	userService service.UserService, userCollection *mongo.Collection, jwtManager *utils.JWTManager) (*AuthServer, error) {
 
 	authServer := &AuthServer{

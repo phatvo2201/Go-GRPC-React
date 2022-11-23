@@ -15,13 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type AuthService interface {
-	SignUpUser(*models.SignUpInput) (*models.DBResponse, error)
-	SignInUser(*models.SignUpInput) (*models.DBResponse, error)
-
-	SignWallet(user *models.CreateWalletRequest) (*models.DBWallet, error)
-}
-
 type AuthServiceImpl struct {
 	usercollection   *mongo.Collection
 	walletcollection *mongo.Collection

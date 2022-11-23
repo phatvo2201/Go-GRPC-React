@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const USER_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const REGISTER_URL = '/v1/create_user';
+const REGISTER_URL = '/api/v1/auth/create_user';
 
 const Register = () => {
     const userRef = useRef();

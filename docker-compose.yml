@@ -34,6 +34,8 @@ services:
     build: 
       context: ./authenservice
       dockerfile: Dockerfile
+      target: authenbuilder
+
       
     ports:
       - 9090:9090
@@ -52,6 +54,7 @@ services:
     build: 
       context: ./gateway
       dockerfile: Dockerfile
+      target : gatewaybuilder
     networks:
       - frontend
       - backend

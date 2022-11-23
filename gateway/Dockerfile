@@ -1,29 +1,34 @@
-# FROM golang:1.16-alpine
-# WORKDIR /app
-# COPY go.mod go.sum ./
-# # fetch dependancies
-# RUN go mod download && \
-#     go mod verify
-
-# COPY . .
-
-# RUN go build -o ./gatewaygo ./cmd/server/main.go
-
-# CMD [ "./gatewaygo" ]
-# EXPOSE 8080
-
-FROM golang:1.16-alpine
+FROM golang:1.16-alpine as build
+RUN adduser \
+  --disabled-password \
+  --gecos "" \
+  --home "/nonexistent" \
+  --shell "/sbin/nologin" \
+  --no-create-home \
+  --uid 65532 \
+  small-user
 
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
+COPY . .
+
 RUN go mod download
+RUN go mod verify
 
-COPY . ./
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /main ./cmd/server/main.go
 
-RUN go build -o /gtwaygo ./cmd/server/main.go
-EXPOSE 8080
 
-CMD [ "/gtwaygo" ]
 
+FROM scratch as gatewaybuilder
+
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /etc/passwd /etc/passwd
+COPY --from=build /etc/group /etc/group
+
+COPY --from=build /main .
+COPY --from=build /app/app.env .
+
+
+USER small-user:small-user
+
+CMD ["./main"]
