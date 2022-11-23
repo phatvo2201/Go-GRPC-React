@@ -46,7 +46,7 @@ func run() error {
 		log.Fatal("can not regis user gw")
 	}
 
-	err = userinfo.RegisterSimpleBankHandlerFromEndpoint(ctx, mux, *grpcAuthServerEndpoint, opts)
+	err = userinfo.RegisterAuthenServiceHandlerFromEndpoint(ctx, mux, *grpcAuthServerEndpoint, opts)
 	log.Println("regis gate way with auth handler rpc")
 	if err != nil {
 		log.Fatal("can not regis gw")

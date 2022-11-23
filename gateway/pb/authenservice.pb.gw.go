@@ -28,8 +28,8 @@ var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
 
-func request_SimpleBank_SignUpUser_0(ctx context.Context, marshaler runtime.Marshaler, client SimpleBankClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SignUpUserInput
+func request_AuthenService_SignUpUser_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SignUpUserRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -45,8 +45,8 @@ func request_SimpleBank_SignUpUser_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
-func request_SimpleBank_SignInUser_0(ctx context.Context, marshaler runtime.Marshaler, client SimpleBankClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SignInUserInput
+func request_AuthenService_SignInUser_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SignInUserRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -62,24 +62,7 @@ func request_SimpleBank_SignInUser_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
-func request_SimpleBank_VerifyEmail_0(ctx context.Context, marshaler runtime.Marshaler, client SimpleBankClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq VerifyEmailRequest
-	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	msg, err := client.VerifyEmail(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func request_SimpleBank_RefreshToken_0(ctx context.Context, marshaler runtime.Marshaler, client SimpleBankClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AuthenService_RefreshToken_0(ctx context.Context, marshaler runtime.Marshaler, client AuthenServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RefrehEmpty
 	var metadata runtime.ServerMetadata
 
@@ -96,9 +79,9 @@ func request_SimpleBank_RefreshToken_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-// RegisterSimpleBankHandlerFromEndpoint is same as RegisterSimpleBankHandler but
+// RegisterAuthenServiceHandlerFromEndpoint is same as RegisterAuthenServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterSimpleBankHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterAuthenServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -118,23 +101,23 @@ func RegisterSimpleBankHandlerFromEndpoint(ctx context.Context, mux *runtime.Ser
 		}()
 	}()
 
-	return RegisterSimpleBankHandler(ctx, mux, conn)
+	return RegisterAuthenServiceHandler(ctx, mux, conn)
 }
 
-// RegisterSimpleBankHandler registers the http handlers for service SimpleBank to "mux".
+// RegisterAuthenServiceHandler registers the http handlers for service AuthenService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterSimpleBankHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterSimpleBankHandlerClient(ctx, mux, NewSimpleBankClient(conn))
+func RegisterAuthenServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterAuthenServiceHandlerClient(ctx, mux, NewAuthenServiceClient(conn))
 }
 
-// RegisterSimpleBankHandlerClient registers the http handlers for service SimpleBank
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "SimpleBankClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "SimpleBankClient"
+// RegisterAuthenServiceHandlerClient registers the http handlers for service AuthenService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "AuthenServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "AuthenServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "SimpleBankClient" to call the correct interceptors.
-func RegisterSimpleBankHandlerClient(ctx context.Context, mux *runtime.ServeMux, client SimpleBankClient) error {
+// "AuthenServiceClient" to call the correct interceptors.
+func RegisterAuthenServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client AuthenServiceClient) error {
 
-	mux.Handle("POST", pattern_SimpleBank_SignUpUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_AuthenService_SignUpUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -143,18 +126,18 @@ func RegisterSimpleBankHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SimpleBank_SignUpUser_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AuthenService_SignUpUser_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_SimpleBank_SignUpUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AuthenService_SignUpUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_SimpleBank_SignInUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_AuthenService_SignInUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -163,18 +146,18 @@ func RegisterSimpleBankHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SimpleBank_SignInUser_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AuthenService_SignInUser_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_SimpleBank_SignInUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AuthenService_SignInUser_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_SimpleBank_VerifyEmail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_AuthenService_RefreshToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -183,34 +166,14 @@ func RegisterSimpleBankHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SimpleBank_VerifyEmail_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AuthenService_RefreshToken_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_SimpleBank_VerifyEmail_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("POST", pattern_SimpleBank_RefreshToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_SimpleBank_RefreshToken_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_SimpleBank_RefreshToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AuthenService_RefreshToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -218,21 +181,17 @@ func RegisterSimpleBankHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
-	pattern_SimpleBank_SignUpUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "create_user"}, ""))
+	pattern_AuthenService_SignUpUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "auth", "create_user"}, ""))
 
-	pattern_SimpleBank_SignInUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "login_user"}, ""))
+	pattern_AuthenService_SignInUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "auth", "login_user"}, ""))
 
-	pattern_SimpleBank_VerifyEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "user", "verifyemail"}, ""))
-
-	pattern_SimpleBank_RefreshToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "refresh"}, ""))
+	pattern_AuthenService_RefreshToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "auth", "refresh"}, ""))
 )
 
 var (
-	forward_SimpleBank_SignUpUser_0 = runtime.ForwardResponseMessage
+	forward_AuthenService_SignUpUser_0 = runtime.ForwardResponseMessage
 
-	forward_SimpleBank_SignInUser_0 = runtime.ForwardResponseMessage
+	forward_AuthenService_SignInUser_0 = runtime.ForwardResponseMessage
 
-	forward_SimpleBank_VerifyEmail_0 = runtime.ForwardResponseMessage
-
-	forward_SimpleBank_RefreshToken_0 = runtime.ForwardResponseMessage
+	forward_AuthenService_RefreshToken_0 = runtime.ForwardResponseMessage
 )

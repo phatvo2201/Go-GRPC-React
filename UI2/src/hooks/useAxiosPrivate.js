@@ -12,7 +12,7 @@ const useAxiosPrivate = () => {
     const { auth } = useAuth();
     let token =''
     if (!cookies.token){
-        token  = "hgghghdfhdgh"
+        token  = ""
     }else{
         token = cookies.token.accessToken
 

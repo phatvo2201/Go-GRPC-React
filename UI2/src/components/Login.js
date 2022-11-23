@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 
 
 import axios from '../api/axios';
-const LOGIN_URL = '/v1/login_user';
+const LOGIN_URL = '/api/v1/auth/login_user';
 
 const Login = () => {
     const [cookies, setCookie] = useCookies(['user','token','rftoken','roles']);

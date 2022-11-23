@@ -7,7 +7,7 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY . ./
+COPY . .
 
 RUN go build -o /authgo ./cmd/server/main.go
 EXPOSE 9090

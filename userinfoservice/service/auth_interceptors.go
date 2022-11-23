@@ -5,8 +5,8 @@ import (
 	"log"
 	"strings"
 
-	wallet "github.com/phatbb/wallet/pb"
-	"github.com/phatbb/wallet/utils"
+	userinfo "github.com/phatbb/userinfo/pb"
+	"github.com/phatbb/userinfo/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -32,23 +32,20 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 
-		_, ok := req.(*wallet.GetInfoRequestGmail)
+		_, ok := req.(*userinfo.GetInfoRequestGmail)
 		if ok {
-			log.Println("intercept for get email owner")
-			log.Println("--> unary interceptor: ", req.(*wallet.GetInfoRequestGmail).Gmail)
-			err := interceptor.authorize(ctx, info.FullMethod, req.(*wallet.GetInfoRequestGmail).Gmail)
+
+			log.Println("--> unary interceptor: ", req.(*userinfo.GetInfoRequestGmail).Gmail)
+			err := interceptor.authorize(ctx, info.FullMethod, req.(*userinfo.GetInfoRequestGmail).Gmail)
 			if err != nil {
 				return nil, err
 			}
 
 		}
 
-		log.Println("--> unary interceptor: ", info.FullMethod)
-
-		// Use the provided zap.Logger for logging but use the fields from context.
-
 		err := interceptor.authorize(ctx, info.FullMethod, "")
 		if err != nil {
+			log.Printf("you have an error protect by interceptor ,this err is %s", err)
 			return nil, err
 		}
 
@@ -64,15 +61,12 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		log.Println("this is all can access the grpc ")
-		return status.Errorf(codes.Unauthenticated, "access token is not provider1")
+		return status.Errorf(codes.Unauthenticated, "can not access context")
 
 	}
 	autheninfo := md["authorization"]
-	// log.Printf("this is the metadata %s", md)
 	if len(autheninfo) == 0 {
-		log.Println("this is all can access the grpc ")
-		return status.Errorf(codes.Unauthenticated, "access token is not provider2 %s xzczxczxc", method)
+		return status.Errorf(codes.Unauthenticated, "access token is not provider %s", method)
 	}
 
 	accessToken := autheninfo[0]
@@ -84,9 +78,9 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 
 	claims, err := interceptor.jwtManager.Verify(accessToken)
 	if err != nil {
-		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+		log.Printf("this is err when verify token %s", err)
+		return err
 	}
-	log.Println(claims.Email)
 
 	log.Printf("hellooo %s", email)
 

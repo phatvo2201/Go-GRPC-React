@@ -12,6 +12,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type UserService interface {
+	FindUserByEmail(email string) (*models.DBResponse, error)
+	FindUserById(id string) (*models.DBResponse, error)
+	FindWalletByOwner(gmail string) (*models.DBWallet, error)
+	UpdateUser(id string, updateData *models.UpdateInput) (*models.DBResponse, error)
+}
+
 type UserServiceImpl struct {
 	usercollection   *mongo.Collection
 	walletcollection *mongo.Collection

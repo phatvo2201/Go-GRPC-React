@@ -39,7 +39,7 @@ const Wallet = () => {
 
         const getUsers = async () => {
             try {
-                const response = await axiosPrivate.post('http://localhost:8080/v1/get_wallet',
+                const response = await axiosPrivate.post('http://localhost:8080/api/v1/userinfo/get_wallet',
                     JSON.stringify({ "Gmail":email}),
                     {
                         // headers: { 'Content-Type': 'application/json' },

@@ -13,191 +13,155 @@ import (
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion7
 
-// SimpleBankClient is the client API for SimpleBank service.
+// AuthenServiceClient is the client API for AuthenService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SimpleBankClient interface {
-	SignUpUser(ctx context.Context, in *SignUpUserInput, opts ...grpc.CallOption) (*SignUpUserResponse, error)
-	SignInUser(ctx context.Context, in *SignInUserInput, opts ...grpc.CallOption) (*SignInUserResponse, error)
-	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*GenericResponse, error)
+type AuthenServiceClient interface {
+	SignUpUser(ctx context.Context, in *SignUpUserRequest, opts ...grpc.CallOption) (*SignUpUserResponse, error)
+	SignInUser(ctx context.Context, in *SignInUserRequest, opts ...grpc.CallOption) (*SignInUserResponse, error)
 	RefreshToken(ctx context.Context, in *RefrehEmpty, opts ...grpc.CallOption) (*SignInUserResponse, error)
 }
 
-type simpleBankClient struct {
+type authenServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewSimpleBankClient(cc grpc.ClientConnInterface) SimpleBankClient {
-	return &simpleBankClient{cc}
+func NewAuthenServiceClient(cc grpc.ClientConnInterface) AuthenServiceClient {
+	return &authenServiceClient{cc}
 }
 
-func (c *simpleBankClient) SignUpUser(ctx context.Context, in *SignUpUserInput, opts ...grpc.CallOption) (*SignUpUserResponse, error) {
+func (c *authenServiceClient) SignUpUser(ctx context.Context, in *SignUpUserRequest, opts ...grpc.CallOption) (*SignUpUserResponse, error) {
 	out := new(SignUpUserResponse)
-	err := c.cc.Invoke(ctx, "/pb.SimpleBank/SignUpUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.AuthenService/SignUpUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *simpleBankClient) SignInUser(ctx context.Context, in *SignInUserInput, opts ...grpc.CallOption) (*SignInUserResponse, error) {
+func (c *authenServiceClient) SignInUser(ctx context.Context, in *SignInUserRequest, opts ...grpc.CallOption) (*SignInUserResponse, error) {
 	out := new(SignInUserResponse)
-	err := c.cc.Invoke(ctx, "/pb.SimpleBank/SignInUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.AuthenService/SignInUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *simpleBankClient) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*GenericResponse, error) {
-	out := new(GenericResponse)
-	err := c.cc.Invoke(ctx, "/pb.SimpleBank/VerifyEmail", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *simpleBankClient) RefreshToken(ctx context.Context, in *RefrehEmpty, opts ...grpc.CallOption) (*SignInUserResponse, error) {
+func (c *authenServiceClient) RefreshToken(ctx context.Context, in *RefrehEmpty, opts ...grpc.CallOption) (*SignInUserResponse, error) {
 	out := new(SignInUserResponse)
-	err := c.cc.Invoke(ctx, "/pb.SimpleBank/RefreshToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.AuthenService/RefreshToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// SimpleBankServer is the server API for SimpleBank service.
-// All implementations must embed UnimplementedSimpleBankServer
+// AuthenServiceServer is the server API for AuthenService service.
+// All implementations must embed UnimplementedAuthenServiceServer
 // for forward compatibility
-type SimpleBankServer interface {
-	SignUpUser(context.Context, *SignUpUserInput) (*SignUpUserResponse, error)
-	SignInUser(context.Context, *SignInUserInput) (*SignInUserResponse, error)
-	VerifyEmail(context.Context, *VerifyEmailRequest) (*GenericResponse, error)
+type AuthenServiceServer interface {
+	SignUpUser(context.Context, *SignUpUserRequest) (*SignUpUserResponse, error)
+	SignInUser(context.Context, *SignInUserRequest) (*SignInUserResponse, error)
 	RefreshToken(context.Context, *RefrehEmpty) (*SignInUserResponse, error)
-	mustEmbedUnimplementedSimpleBankServer()
+	mustEmbedUnimplementedAuthenServiceServer()
 }
 
-// UnimplementedSimpleBankServer must be embedded to have forward compatible implementations.
-type UnimplementedSimpleBankServer struct {
+// UnimplementedAuthenServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthenServiceServer struct {
 }
 
-func (UnimplementedSimpleBankServer) SignUpUser(context.Context, *SignUpUserInput) (*SignUpUserResponse, error) {
+func (UnimplementedAuthenServiceServer) SignUpUser(context.Context, *SignUpUserRequest) (*SignUpUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUpUser not implemented")
 }
-func (UnimplementedSimpleBankServer) SignInUser(context.Context, *SignInUserInput) (*SignInUserResponse, error) {
+func (UnimplementedAuthenServiceServer) SignInUser(context.Context, *SignInUserRequest) (*SignInUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignInUser not implemented")
 }
-func (UnimplementedSimpleBankServer) VerifyEmail(context.Context, *VerifyEmailRequest) (*GenericResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
-}
-func (UnimplementedSimpleBankServer) RefreshToken(context.Context, *RefrehEmpty) (*SignInUserResponse, error) {
+func (UnimplementedAuthenServiceServer) RefreshToken(context.Context, *RefrehEmpty) (*SignInUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
-func (UnimplementedSimpleBankServer) mustEmbedUnimplementedSimpleBankServer() {}
+func (UnimplementedAuthenServiceServer) mustEmbedUnimplementedAuthenServiceServer() {}
 
-// UnsafeSimpleBankServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SimpleBankServer will
+// UnsafeAuthenServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthenServiceServer will
 // result in compilation errors.
-type UnsafeSimpleBankServer interface {
-	mustEmbedUnimplementedSimpleBankServer()
+type UnsafeAuthenServiceServer interface {
+	mustEmbedUnimplementedAuthenServiceServer()
 }
 
-func RegisterSimpleBankServer(s *grpc.Server, srv SimpleBankServer) {
-	s.RegisterService(&_SimpleBank_serviceDesc, srv)
+func RegisterAuthenServiceServer(s *grpc.Server, srv AuthenServiceServer) {
+	s.RegisterService(&_AuthenService_serviceDesc, srv)
 }
 
-func _SimpleBank_SignUpUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignUpUserInput)
+func _AuthenService_SignUpUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignUpUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SimpleBankServer).SignUpUser(ctx, in)
+		return srv.(AuthenServiceServer).SignUpUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.SimpleBank/SignUpUser",
+		FullMethod: "/pb.AuthenService/SignUpUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimpleBankServer).SignUpUser(ctx, req.(*SignUpUserInput))
+		return srv.(AuthenServiceServer).SignUpUser(ctx, req.(*SignUpUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SimpleBank_SignInUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignInUserInput)
+func _AuthenService_SignInUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignInUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SimpleBankServer).SignInUser(ctx, in)
+		return srv.(AuthenServiceServer).SignInUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.SimpleBank/SignInUser",
+		FullMethod: "/pb.AuthenService/SignInUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimpleBankServer).SignInUser(ctx, req.(*SignInUserInput))
+		return srv.(AuthenServiceServer).SignInUser(ctx, req.(*SignInUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SimpleBank_VerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyEmailRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SimpleBankServer).VerifyEmail(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/pb.SimpleBank/VerifyEmail",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimpleBankServer).VerifyEmail(ctx, req.(*VerifyEmailRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SimpleBank_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthenService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RefrehEmpty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SimpleBankServer).RefreshToken(ctx, in)
+		return srv.(AuthenServiceServer).RefreshToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.SimpleBank/RefreshToken",
+		FullMethod: "/pb.AuthenService/RefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SimpleBankServer).RefreshToken(ctx, req.(*RefrehEmpty))
+		return srv.(AuthenServiceServer).RefreshToken(ctx, req.(*RefrehEmpty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _SimpleBank_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.SimpleBank",
-	HandlerType: (*SimpleBankServer)(nil),
+var _AuthenService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "pb.AuthenService",
+	HandlerType: (*AuthenServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SignUpUser",
-			Handler:    _SimpleBank_SignUpUser_Handler,
+			Handler:    _AuthenService_SignUpUser_Handler,
 		},
 		{
 			MethodName: "SignInUser",
-			Handler:    _SimpleBank_SignInUser_Handler,
-		},
-		{
-			MethodName: "VerifyEmail",
-			Handler:    _SimpleBank_VerifyEmail_Handler,
+			Handler:    _AuthenService_SignInUser_Handler,
 		},
 		{
 			MethodName: "RefreshToken",
-			Handler:    _SimpleBank_RefreshToken_Handler,
+			Handler:    _AuthenService_RefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

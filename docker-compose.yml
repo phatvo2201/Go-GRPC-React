@@ -15,6 +15,7 @@ services:
     build: 
       context: ./userinfoservice
       dockerfile: Dockerfile
+      target: userinfo
       
     ports:
       - 9091:9091

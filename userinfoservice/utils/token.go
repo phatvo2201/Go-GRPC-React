@@ -97,12 +97,13 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("invalid token: %w", err)
+		//return nil, fmt.Errorf("invalid token : %w", err)
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, err
 	}
 
 	return claims, nil

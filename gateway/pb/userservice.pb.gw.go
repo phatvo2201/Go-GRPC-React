@@ -181,11 +181,11 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_UserService_FindUserById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "get_user"}, ""))
+	pattern_UserService_FindUserById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "userinfo", "get_user_by_id"}, ""))
 
-	pattern_UserService_FindUserByEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "get_user"}, ""))
+	pattern_UserService_FindUserByEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "userinfo", "get_user_by_email"}, ""))
 
-	pattern_UserService_GetUserWalletInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "get_wallet"}, ""))
+	pattern_UserService_GetUserWalletInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "userinfo", "get_wallet"}, ""))
 )
 
 var (

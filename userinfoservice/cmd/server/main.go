@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/phatbb/userinfo/utils"
 	"log"
 	"net"
 
@@ -13,7 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -25,30 +25,15 @@ func accessibleRole() map[string][]string {
 
 	return map[string][]string{
 		infoservice + "GetUserWalletInfo": {"user"},
-		infoservice + "FindWalletByOwner": {"user"},
+		infoservice + "FindUserByEmail":   {"user"},
+		infoservice + "FindUserById":      {"user"},
 	}
-}
-
-func UnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	log.Println("-------->???????????? unary intereptor:", info.FullMethod)
-	return handler(ctx, req)
-
 }
 
 func startGrpcServer() {
 	log.Println("start auth grpc server")
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
-	if err != nil {
-		log.Println("this is error from client side")
-	}
-	defer conn.Close()
-	log.Println("connect  auth grpc server success")
 
-	//create grpc client to call another grpc server authen to check email owner and verify token
-	verifyClient := implgrpc.NewVerifyUserClient(conn)
 	config, err := config.LoadConfig(".")
-	// config, err := config.LoadConfig("../")
-
 	if err != nil {
 		log.Fatalln("cant not load config from env")
 	}
@@ -63,10 +48,15 @@ func startGrpcServer() {
 
 	walletCollection := mongoClient.Database(config.DBName).Collection("wallet")
 	userService := service.NewUserService(usercollection, walletCollection, ctx)
-	userServerHandle := implgrpc.NewUserServerImpl(config, userService, verifyClient)
-	// jwtProvider := utils.NewJwtManager(config.AccessTokenPublicKey, config.AccessTokenPrivateKey, config.AccessTokenExpiresIn)
+	userServerHandle := implgrpc.NewUserServerImpl(config, userService)
+	jwtProvider := utils.NewJwtManager(config.AccessTokenPublicKey, config.AccessTokenPrivateKey, config.AccessTokenExpiresIn)
 
-	grpcServer := grpc.NewServer()
+	//create and use interceptor
+	interceptor := service.NewAuthInterceptor(jwtProvider, accessibleRole())
+
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.Unary()),
+	)
 	userinfo.RegisterUserServiceServer(grpcServer, userServerHandle)
 
 	listener, err := net.Listen("tcp", config.GrpcServerAddress)

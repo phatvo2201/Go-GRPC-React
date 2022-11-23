@@ -18,7 +18,7 @@ const useRefreshToken = () => {
     }
 
     const refresh = async () => {
-        // const response = await axios.post("http://localhost:8080/v1/refresh",
+        // const response = await axios.post("http://localhost:8080/api/v1/auth/refresh",
         //     config
         // );
         // setAuth(prev => {
@@ -27,7 +27,7 @@ const useRefreshToken = () => {
         //     return { ...prev, accessToken: response.data.accessToken }
         // });
 
-        const response = await axios.post('http://localhost:8080/v1/refresh',
+        const response = await axios.post('http://localhost:8080/api/v1/auth/refresh',
             JSON.stringify({}),
             {
                 headers: { 'Content-Type': 'application/json',Authorization: `Bearer ${refreshToken}` },
