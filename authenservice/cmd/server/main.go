@@ -33,8 +33,7 @@ func startGrpcServer() {
 
 	walletCollection := mongoClient.Database(config.DBName).Collection("wallet")
 	authService := service.NewAuthService(usercollection, walletCollection, ctx)
-	userService := service.NewUserService(usercollection, walletCollection, ctx)
-	authServerHandler, _ := implgrpc.NewGrpcAuthServer(config, authService, userService, usercollection, jwtManger)
+	authServerHandler, _ := implgrpc.NewGrpcAuthServer(config, authService, usercollection, jwtManger)
 
 	grpcServer := grpc.NewServer()
 	wallet.RegisterAuthenServiceServer(grpcServer, authServerHandler)

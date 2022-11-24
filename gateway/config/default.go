@@ -13,15 +13,6 @@ type Config struct {
 	DBName            string `mapstructure:"DBName"`
 	GrpcServerAddress string `mapstructure:"GRPC_SERVER_ADDRESS"`
 
-	Origin      string `mapstructure:"CLIENT_ORIGIN"`
-	Origin_MAIL string `mapstructure:"CLIENT_ORIGIN_MAIL"`
-
-	EmailFrom string `mapstructure:"EMAIL_FROM"`
-	SMTPHost  string `mapstructure:"SMTP_HOST"`
-	SMTPPass  string `mapstructure:"SMTP_PASS"`
-	SMTPPort  int    `mapstructure:"SMTP_PORT"`
-	SMTPUser  string `mapstructure:"SMTP_USER"`
-
 	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 	AccessTokenPublicKey   string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY"`
 	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`

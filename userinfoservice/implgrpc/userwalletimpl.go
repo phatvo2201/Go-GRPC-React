@@ -9,12 +9,12 @@ import (
 )
 
 type UserServer struct {
-	userService service.UserService
+	userService *service.UserServiceImpl
 	config      config.Config
 	userinfo.UnimplementedUserServiceServer
 }
 
-func NewUserServerImpl(config config.Config, userService service.UserService) *UserServer {
+func NewUserServerImpl(config config.Config, userService *service.UserServiceImpl) *UserServer {
 	return &UserServer{
 		userService: userService,
 		config:      config,

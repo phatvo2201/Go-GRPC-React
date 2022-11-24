@@ -21,19 +21,17 @@ import (
 type AuthServer struct {
 	config         config.Config
 	authService    *service.AuthServiceImpl
-	userService    service.UserService
 	userCollection *mongo.Collection
 	jwtManager     *utils.JWTManager
 	wallet.UnimplementedAuthenServiceServer
 }
 
 func NewGrpcAuthServer(config config.Config, authService *service.AuthServiceImpl,
-	userService service.UserService, userCollection *mongo.Collection, jwtManager *utils.JWTManager) (*AuthServer, error) {
+	userCollection *mongo.Collection, jwtManager *utils.JWTManager) (*AuthServer, error) {
 
 	authServer := &AuthServer{
 		config:         config,
 		authService:    authService,
-		userService:    userService,
 		userCollection: userCollection,
 		jwtManager:     jwtManager,
 	}
@@ -108,7 +106,7 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserRequest
 	//
 	//}
 
-	newuser, err := as.userService.FindUserByEmail(user.Email)
+	newuser, err := as.authService.FindUserByEmail(user.Email)
 
 	userId := newuser.ID
 	walletuser := &models.CreateWalletRequest{}
@@ -129,7 +127,7 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *wallet.SignUpUserRequest
 }
 
 func (authServer *AuthServer) SignInUser(ctx context.Context, req *wallet.SignInUserRequest) (*wallet.SignInUserResponse, error) {
-	user, err := authServer.userService.FindUserByEmail(req.GetEmail())
+	user, err := authServer.authService.FindUserByEmail(req.GetEmail())
 	log.Printf("this is your email %s", req.GetEmail())
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -173,7 +171,7 @@ func (authServer *AuthServer) SignInUser(ctx context.Context, req *wallet.SignIn
 func (as *AuthServer) FindUserById(ctx context.Context, in *wallet.GetInfoRequestId) (*wallet.UserResponse, error) {
 
 	id := in.GetId()
-	user, err := as.userService.FindUserById(id)
+	user, err := as.authService.FindUserById(id)
 	if err != nil {
 		return nil, err
 
@@ -216,7 +214,7 @@ func (as *AuthServer) RefreshToken(ctx context.Context, req *wallet.RefrehEmpty)
 		return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
 	}
 	log.Println(claims.Email)
-	user, err := as.userService.FindUserByEmail(claims.Email)
+	user, err := as.authService.FindUserByEmail(claims.Email)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "cannot find the email: %v", err)
 	}
