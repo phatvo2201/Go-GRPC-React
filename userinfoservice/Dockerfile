@@ -1,27 +1,3 @@
-#
-#FROM golang:1.16-alpine as build
-#
-#WORKDIR /app
-#
-#COPY go.mod ./
-#COPY go.sum ./
-#RUN go mod download
-#
-#COPY . .
-#
-#RUN go build -o ./userinfo ./cmd/server/main.go
-#
-#
-#
-#FROM alpine as proxy
-#
-#COPY --from=build /app/userinfo ./
-#COPY --from=build /app/app.env ./
-
-#EXPOSE 9091
-#
-#ENTRYPOINT [ "./userinfo" ]
-
 
 FROM golang:1.16-alpine as build
 RUN adduser \
@@ -33,7 +9,6 @@ RUN adduser \
   --uid 65532 \
   small-user
 
-#WORKDIR $GOPATH/src/smallest-golang/app/
 WORKDIR /app
 
 COPY . .

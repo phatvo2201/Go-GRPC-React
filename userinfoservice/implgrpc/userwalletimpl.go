@@ -3,7 +3,7 @@ package implgrpc
 import (
 	"context"
 	"github.com/phatbb/userinfo/config"
-	userinfo "github.com/phatbb/userinfo/pb"
+	"github.com/phatbb/userinfo/proto/userinfo"
 	"github.com/phatbb/userinfo/service"
 	"log"
 )
@@ -26,6 +26,7 @@ func (us *UserServer) FindUserById(ctx context.Context, in *userinfo.GetInfoRequ
 	id := in.GetId()
 	user, err := us.userService.FindUserById(id)
 	if err != nil {
+		log.Println("can not find user by id")
 		return nil, err
 
 	}
@@ -34,8 +35,6 @@ func (us *UserServer) FindUserById(ctx context.Context, in *userinfo.GetInfoRequ
 		Username: user.Name,
 		Email:    user.Email,
 		Role:     user.Role,
-		// Wallet: user.Wallet,
-
 	}, nil
 
 }
@@ -43,6 +42,7 @@ func (us *UserServer) FindUserByEmail(ctx context.Context, in *userinfo.GetInfoR
 	email := in.GetGmail()
 	user, err := us.userService.FindUserByEmail(email)
 	if err != nil {
+		log.Println("can not find user by email")
 		return nil, err
 
 	}
@@ -51,8 +51,6 @@ func (us *UserServer) FindUserByEmail(ctx context.Context, in *userinfo.GetInfoR
 		Username: user.Name,
 		Email:    user.Email,
 		Role:     user.Role,
-		// Wallet: user.Wallet,
-
 	}, nil
 
 }
@@ -60,13 +58,13 @@ func (us *UserServer) GetUserWalletInfo(ctx context.Context, in *userinfo.GetInf
 
 	email := in.GetGmail()
 
-	walletuser, err := us.userService.FindWalletByOwner(email)
+	walletUser, err := us.userService.FindWalletByOwner(email)
 	if err != nil {
 		log.Println("error when get user by email")
 		return nil, err
 	}
 	return &userinfo.Wallet{
-		Balance:  uint64(walletuser.Balance),
-		Currency: walletuser.Currency,
+		Balance:  uint64(walletUser.Balance),
+		Currency: walletUser.Currency,
 	}, nil
 }

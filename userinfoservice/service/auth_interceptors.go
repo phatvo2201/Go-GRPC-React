@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	userinfo "github.com/phatbb/userinfo/pb"
+	"github.com/phatbb/userinfo/proto/userinfo"
 	"github.com/phatbb/userinfo/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -13,7 +13,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//erver interceptor for authentication and authorization
 type AuthInterceptor struct {
 	jwtManager      *utils.JWTManager
 	accessibleRoles map[string][]string
@@ -78,18 +77,13 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 
 	claims, err := interceptor.jwtManager.Verify(accessToken)
 	if err != nil {
-		log.Printf("this is err when verify token %s", err)
-		return err
+		return status.Errorf(codes.Unauthenticated, "access token is invalid by validate %s", err)
 	}
-
-	log.Printf("hellooo %s", email)
-
-	log.Printf("hellooo %s", claims.Email)
 
 	if email != "" {
 		if claims.Email != email {
-			log.Println("helloooo")
-			return status.Errorf(codes.Unauthenticated, "you can not have permissccess this info : %v", err)
+			log.Println("the email not right")
+			return status.Errorf(codes.Unauthenticated, "you can not have permission this info : %v", err)
 
 		}
 

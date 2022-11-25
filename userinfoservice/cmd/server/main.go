@@ -2,22 +2,17 @@ package main
 
 import (
 	"context"
-	"flag"
 	"github.com/phatbb/userinfo/utils"
 	"log"
 	"net"
 
 	"github.com/phatbb/userinfo/config"
 	"github.com/phatbb/userinfo/implgrpc"
-	userinfo "github.com/phatbb/userinfo/pb"
+	"github.com/phatbb/userinfo/proto/userinfo"
 	"github.com/phatbb/userinfo/service"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
-)
-
-const (
-	address = "host.docker.internal:9090"
 )
 
 func accessibleRole() map[string][]string {
@@ -39,16 +34,18 @@ func startGrpcServer() {
 	}
 	ctx := context.TODO()
 	//create jwt manager
-	mongoconn := options.Client().ApplyURI(config.DBUri)
-	mongoClient, err := mongo.Connect(ctx, mongoconn)
+	mongoConn := options.Client().ApplyURI(config.DBUri)
+	mongoClient, err := mongo.Connect(ctx, mongoConn)
 	if err != nil {
 		log.Fatal("cant not connect to the mongodb database")
 	}
-	usercollection := mongoClient.Database(config.DBName).Collection("users")
-
+	userCollection := mongoClient.Database(config.DBName).Collection("users")
 	walletCollection := mongoClient.Database(config.DBName).Collection("wallet")
-	userService := service.NewUserService(usercollection, walletCollection, ctx)
+
+	userService := service.NewUserService(userCollection, walletCollection, ctx)
+
 	userServerHandle := implgrpc.NewUserServerImpl(config, userService)
+
 	jwtProvider := utils.NewJwtManager(config.AccessTokenPublicKey, config.AccessTokenPrivateKey, config.AccessTokenExpiresIn)
 
 	//create and use interceptor
@@ -70,11 +67,6 @@ func startGrpcServer() {
 	}
 
 }
-
-var (
-	//start userinfo grpc server handler
-	grpcServerEndpoint = flag.String("grpc-server-endpoint", "localhost:9091", "gRPC server endpoint")
-)
 
 func main() {
 

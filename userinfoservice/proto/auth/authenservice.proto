@@ -1,6 +1,6 @@
 syntax = "proto3";
 package pb;
-option go_package = "github.com/phatbb/userinfo";
+option go_package = "github.com/phatbb/userinfo/auth";
 import "userservice.proto";
 import "google/api/annotations.proto";
 
