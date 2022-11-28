@@ -27,27 +27,19 @@ const Wallet = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-
-
-
     const email = cookies.user.user
 
     useEffect(() => {
         let isMounted = true;
         const controller = new AbortController();
-        console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-
         const getUsers = async () => {
             try {
                 const response = await axiosPrivate.post('http://localhost:8080/api/v1/userinfo/get_wallet',
                     JSON.stringify({ "Gmail":email}),
                     {
-                        // headers: { 'Content-Type': 'application/json' },
                         signal: controller.signal
-
                     }
                 );
-                console.log(response.data);
                 isMounted && setWallet(response.data.balance);
             } catch (err) {
                 console.error(err);
@@ -62,11 +54,6 @@ const Wallet = () => {
             controller.abort();
         }
     }, [])
-   
-
-
-
-
 
     return (
         <section>

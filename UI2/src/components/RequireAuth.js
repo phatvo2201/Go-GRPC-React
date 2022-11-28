@@ -10,14 +10,8 @@ const RequireAuth = ({ allowedRoles }) => {
 
     const roles = cookies.roles
 
-
-
-
-
-
     return (
         roles?.roles?.find(role => allowedRoles?.includes(role))
-        // allowedRoles.includes(roles)
             ? <Outlet />
             : auth?.user
                 ? <Navigate to="/unauthorized" state={{ from: location }} replace />

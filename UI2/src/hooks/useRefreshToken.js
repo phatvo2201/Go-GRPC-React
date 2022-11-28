@@ -18,15 +18,7 @@ const useRefreshToken = () => {
     }
 
     const refresh = async () => {
-        // const response = await axios.post("http://localhost:8080/api/v1/auth/refresh",
-        //     config
-        // );
-        // setAuth(prev => {
-        //     console.log(JSON.stringify(prev));
-        //     console.log(response.data.accessToken);
-        //     return { ...prev, accessToken: response.data.accessToken }
-        // });
-
+        //call to get new token by refresh token
         const response = await axios.post('http://localhost:8080/api/v1/auth/refresh',
             JSON.stringify({}),
             {
@@ -35,18 +27,14 @@ const useRefreshToken = () => {
             }
         );
 
-setAuth(prev => {
-    console.log(JSON.stringify(prev));
-    console.log("lolololol")
-    console.log(response.data.access_token);
+    setAuth(prev => {
     return { ...prev, accessToken: response.data.access_token }
-});
+    });
 
-let accessToken = response.data.access_token
-setCookie('token',{ accessToken })
+    let accessToken = response.data.access_token
+    setCookie('token',{ accessToken })
 
-//  setCookie('token',{ accessToken })
-    
+
         return response.data.accessToken;
     }
     return refresh;

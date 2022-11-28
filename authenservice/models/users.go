@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// 👈 SignUpInput struct
 type SignUpInput struct {
 	Name               string    `json:"name" bson:"name" binding:"required"`
 	Email              string    `json:"email" bson:"email" binding:"required"`
@@ -48,17 +47,6 @@ type UserResponse struct {
 	Role      string             `json:"role,omitempty" bson:"role,omitempty"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
-}
-
-func FilteredResponse(user *DBResponse) UserResponse {
-	return UserResponse{
-		ID:        user.ID,
-		Email:     user.Email,
-		Name:      user.Name,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-	}
 }
 
 type UpdateInput struct {

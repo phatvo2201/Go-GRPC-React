@@ -1,4 +1,4 @@
-module github.com/phatbb/wallet
+module github.com/phatbb/auth
 
 go 1.16
 

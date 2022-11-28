@@ -42,14 +42,10 @@ const Login = () => {
                     withCredentials: false
                 }
             );
-            console.log(JSON.stringify(response?.data));
-            //console.log(JSON.stringify(response));
             const accessToken = response?.data?.access_token;
             const refreshToken = response?.data?.refresh_token;
 
-            console.log(JSON.stringify(accessToken));
-
-            // const roles = response?.data?.roles;
+            //role for interceptor in front end
             const roles = [2001,1984]
 
             setAuth({ user, pwd, roles, accessToken,refreshToken });

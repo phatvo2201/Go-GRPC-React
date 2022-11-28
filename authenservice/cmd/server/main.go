@@ -6,11 +6,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/phatbb/wallet/config"
-	"github.com/phatbb/wallet/implgrpc"
-	wallet "github.com/phatbb/wallet/pb"
-	"github.com/phatbb/wallet/service"
-	"github.com/phatbb/wallet/utils"
+	"github.com/phatbb/auth/config"
+	"github.com/phatbb/auth/implgrpc"
+	"github.com/phatbb/auth/proto/auth"
+	"github.com/phatbb/auth/service"
+	"github.com/phatbb/auth/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
@@ -24,19 +24,19 @@ func startGrpcServer() {
 	ctx := context.TODO()
 	//create jwt manager
 	jwtManger := utils.NewJwtManager(config.AccessTokenPublicKey, config.AccessTokenPrivateKey, 1500*time.Minute)
-	mongoconn := options.Client().ApplyURI(config.DBUri)
-	mongoClient, err := mongo.Connect(ctx, mongoconn)
+	mongoConn := options.Client().ApplyURI(config.DBUri)
+	mongoClient, err := mongo.Connect(ctx, mongoConn)
 	if err != nil {
 		log.Fatal("cant not connect to the mongodb database")
 	}
-	usercollection := mongoClient.Database(config.DBName).Collection("users")
+	userCollection := mongoClient.Database(config.DBName).Collection("users")
 
 	walletCollection := mongoClient.Database(config.DBName).Collection("wallet")
-	authService := service.NewAuthService(usercollection, walletCollection, ctx)
-	authServerHandler, _ := implgrpc.NewGrpcAuthServer(config, authService, usercollection, jwtManger)
+	authService := service.NewAuthService(userCollection, walletCollection, ctx)
+	authServerHandler, _ := implgrpc.NewGrpcAuthServer(config, authService, userCollection, jwtManger)
 
 	grpcServer := grpc.NewServer()
-	wallet.RegisterAuthenServiceServer(grpcServer, authServerHandler)
+	auth.RegisterAuthenServiceServer(grpcServer, authServerHandler)
 
 	listener, err := net.Listen("tcp", config.GrpcServerAddress)
 	if err != nil {

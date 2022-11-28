@@ -9,44 +9,43 @@ import (
 	"strings"
 	"time"
 
-	"github.com/phatbb/wallet/models"
-	"github.com/phatbb/wallet/utils"
+	"github.com/phatbb/auth/models"
+	"github.com/phatbb/auth/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type AuthServiceImpl struct {
-	usercollection   *mongo.Collection
-	walletcollection *mongo.Collection
+	userCollection   *mongo.Collection
+	walletCollection *mongo.Collection
 	ctx              context.Context
 }
 
-// SignWallet implements AuthService
-
-func NewAuthService(userollection *mongo.Collection, walletcollection *mongo.Collection, ctx context.Context) *AuthServiceImpl {
-	return &AuthServiceImpl{userollection, walletcollection, ctx}
+func NewAuthService(userCollection *mongo.Collection, walletCollection *mongo.Collection, ctx context.Context) *AuthServiceImpl {
+	return &AuthServiceImpl{userCollection, walletCollection, ctx}
 }
 
-func (uc *AuthServiceImpl) SignWallet(wallet *models.CreateWalletRequest) (*models.DBWallet, error) {
+func (as *AuthServiceImpl) SignWallet(wallet *models.CreateWalletRequest) (*models.DBWallet, error) {
 	wallet.Balance = 10000
-	log.Println("inside phAT WALLET")
 	wallet.CreateAt = time.Now()
 	currency := "vietnamdong"
 	wallet.Currency = fmt.Sprintf("%s", currency)
 	wallet.UpdatedAt = wallet.CreateAt
-	res, err := uc.walletcollection.InsertOne(uc.ctx, &wallet)
+
+	res, err := as.walletCollection.InsertOne(as.ctx, &wallet)
 	if err != nil {
 		if er, ok := err.(mongo.WriteException); ok && er.WriteErrors[0].Code == 11000 {
 			return nil, errors.New("user with that email already exist")
 		}
 		return nil, err
 	}
+
 	var newWallet *models.DBWallet
 
 	query := bson.M{"_id": res.InsertedID}
 
-	err = uc.walletcollection.FindOne(uc.ctx, query).Decode(&newWallet)
+	err = as.walletCollection.FindOne(as.ctx, query).Decode(&newWallet)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +67,8 @@ func (as *AuthServiceImpl) SignUpUser(user *models.SignUpInput) (*models.DBRespo
 
 	hashedPassword, _ := utils.HashPassword(user.Password)
 	user.Password = hashedPassword
-	log.Println("before insert user to db")
-	res, err := as.usercollection.InsertOne(as.ctx, &user)
+
+	res, err := as.userCollection.InsertOne(as.ctx, &user)
 
 	if err != nil {
 		if er, ok := err.(mongo.WriteException); ok && er.WriteErrors[0].Code == 11000 {
@@ -83,14 +82,14 @@ func (as *AuthServiceImpl) SignUpUser(user *models.SignUpInput) (*models.DBRespo
 	opt.SetUnique(true)
 	index := mongo.IndexModel{Keys: bson.M{"email": 1}, Options: opt}
 
-	if _, err := as.usercollection.Indexes().CreateOne(as.ctx, index); err != nil {
+	if _, err := as.userCollection.Indexes().CreateOne(as.ctx, index); err != nil {
 		return nil, errors.New("could not create index for email")
 	}
 
 	var newUser *models.DBResponse
 	query := bson.M{"_id": res.InsertedID}
 
-	err = as.usercollection.FindOne(as.ctx, query).Decode(&newUser)
+	err = as.userCollection.FindOne(as.ctx, query).Decode(&newUser)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +103,7 @@ func (as *AuthServiceImpl) SignInUser(user *models.SignUpInput) (*models.DBRespo
 func (as *AuthServiceImpl) FindUserByEmail(email string) (*models.DBResponse, error) {
 	var user *models.DBResponse
 	query := bson.M{"email": email}
-	err := as.usercollection.FindOne(as.ctx, query).Decode(&user)
+	err := as.userCollection.FindOne(as.ctx, query).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &models.DBResponse{}, err
@@ -119,7 +118,7 @@ func (as *AuthServiceImpl) FindUserById(id string) (*models.DBResponse, error) {
 
 	var user *models.DBResponse
 	query := bson.M{"_id": oid}
-	err := as.usercollection.FindOne(as.ctx, query).Decode(&user)
+	err := as.userCollection.FindOne(as.ctx, query).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &models.DBResponse{}, err
