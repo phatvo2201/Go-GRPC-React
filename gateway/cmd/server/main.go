@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
-	"net/http"
-
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	userinfo "github.com/phatbb/userinfo/pb"
 	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
+	"net/http"
+)
+
+const (
+	requestContextKey = 0
 )
 
 var (
@@ -19,14 +23,22 @@ var (
 	grpcAuthServerEndpoint = flag.String("grpc-auth-server-endpoint", "host.docker.internal:9090", "gRPC auth server endpoint")
 )
 
+//custom to disable grpc-metadata prefix
+
+func CustomMatcher(key string) (string, bool) {
+	return fmt.Sprintf("%s", key), true
+
+}
+
 func run() error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	// Register gRPC server endpoint
-	// Note: Make sure the gRPC server is running properly and accessible
-	mux := runtime.NewServeMux()
+	// new server mux with options WithOutgoingHeaderMatcher
+	mux := runtime.NewServeMux(runtime.WithOutgoingHeaderMatcher(CustomMatcher))
+
 	cors := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:3000"},
 		AllowedMethods: []string{

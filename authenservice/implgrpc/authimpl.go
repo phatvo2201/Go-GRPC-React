@@ -6,15 +6,17 @@ import (
 	"github.com/phatbb/auth/models"
 	"github.com/phatbb/auth/proto/auth"
 	"github.com/phatbb/auth/proto/userinfo"
-
 	"github.com/phatbb/auth/service"
 	"github.com/phatbb/auth/utils"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"log"
+	"net/http"
 	"strings"
+	"time"
 )
 
 type AuthServer struct {
@@ -106,6 +108,31 @@ func (as *AuthServer) SignInUser(ctx context.Context, req *auth.SignInUserReques
 		Status:       "success",
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+	}
+
+	cookie2 := http.Cookie{}
+	cookie2.Name = "rftoken"
+	cookie2.Value = refreshToken
+	cookie2.Expires = time.Now().Add(1000 * time.Minute)
+	cookie2.Secure = false
+	cookie2.Path = "/"
+
+	cookie := http.Cookie{}
+	cookie.Name = "token"
+	cookie.Value = accessToken
+	cookie.Expires = time.Now().Add(1000 * time.Minute)
+	cookie.Secure = false
+	cookie.Path = "/"
+
+	md := metadata.Pairs()
+
+	md.Append("set-cookie", cookie.String())
+	md.Append("set-cookie", cookie2.String())
+
+	md.Append("Content-Type", "X-Requested-With")
+	err = grpc.SendHeader(ctx, md)
+	if err != nil {
+		log.Println("error in authen handler")
 	}
 
 	return res, nil

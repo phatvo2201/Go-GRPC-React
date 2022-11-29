@@ -5,12 +5,7 @@ import (
 	"github.com/phatbb/userinfo/config"
 	"github.com/phatbb/userinfo/proto/userinfo"
 	"github.com/phatbb/userinfo/service"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 	"log"
-	"strconv"
 )
 
 type UserServer struct {
@@ -62,11 +57,6 @@ func (us *UserServer) FindUserByEmail(ctx context.Context, in *userinfo.GetInfoR
 func (us *UserServer) GetUserWalletInfo(ctx context.Context, in *userinfo.GetInfoRequestGmail) (*userinfo.Wallet, error) {
 	email := in.GetGmail()
 	//header := metadata.New(map[string]string{"Cookie": cookie})
-	header := metadata.Pairs("gauserId", strconv.Itoa(1111111111111111))
-	if err := grpc.SendHeader(ctx, header); err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to send 'x-response-id' header")
-	}
-
 	walletUser, err := us.userService.FindWalletByOwner(email)
 	if err != nil {
 		log.Println("error when get user by email")

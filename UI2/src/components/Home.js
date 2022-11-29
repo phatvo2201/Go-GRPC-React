@@ -1,19 +1,15 @@
 import { useNavigate, Link } from "react-router-dom";
-import { useContext } from "react";
-import AuthContext from "../context/AuthProvider";
 import { useCookies } from 'react-cookie';
 
 
 const Home = () => {
-    const [cookies, setCookie, removeCookie] = useCookies();
+    const [ removeCookie] = useCookies();
 
-    const { setAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const logout = async () => {
         // if used in more components, this should be in context 
         // axios to /logout endpoint 
-        setAuth({});
         navigate('/linkpage');
         removeCookie("token")
 

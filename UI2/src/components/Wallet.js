@@ -1,29 +1,15 @@
 import { Link } from "react-router-dom"
 import {  useState, useEffect } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import useRefreshToken  from "../hooks/useRefreshToken";
 import { useCookies } from 'react-cookie';
-import { axiosPrivate } from "../api/axios";
-
-
-
-
 import { useLocation, useNavigate,  } from "react-router-dom";
-import axios from '../api/axios';
 
- 
-
-import useAuth from "../hooks/useAuth";
 
 
 const Wallet = () => {
-    const [cookies, setCookie] = useCookies(['user','token','rftoken','roles']);
-
+    const [cookies] = useCookies(['user','token','rftoken','roles']);
     const axiosPrivate = useAxiosPrivate();
-    const refresh = useRefreshToken();
-
     const [wallet, setWallet] = useState();
-
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -67,7 +53,6 @@ const Wallet = () => {
             <div className="flexGrow">
                 <Link to="/">Home</Link>
             </div>
-            <button onClick={()=>refresh()}>refresh</button>
         </section>
     )
 }

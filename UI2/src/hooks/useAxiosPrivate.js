@@ -1,7 +1,6 @@
 import { axiosPrivate } from "../api/axios";
 import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
-import useAuth from "./useAuth";
 import { useCookies } from 'react-cookie';
 
 
@@ -9,16 +8,13 @@ const useAxiosPrivate = () => {
     const [cookies, setCookie] = useCookies(['user','token','rftoken','roles']);
 
     const refresh = useRefreshToken();
-    const { auth } = useAuth();
     let token =''
     if (!cookies.token){
         token  = ""
     }else{
-        token = cookies.token.accessToken
+        token = cookies.token
 
     }
-    
-
 
     useEffect(() => {
 
@@ -49,7 +45,7 @@ const useAxiosPrivate = () => {
             axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
         }
-    }, [auth, refresh])
+    }, [cookies.token, refresh])
 
     return axiosPrivate;
 }

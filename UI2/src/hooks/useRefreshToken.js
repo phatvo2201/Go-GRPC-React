@@ -1,17 +1,11 @@
 import axios from 'axios';
-import useAuth from './useAuth';
 import { useCookies } from 'react-cookie';
 
 
 
 const useRefreshToken = () => {
     const [cookies, setCookie] = useCookies(['token','rftoken']);
-
-    
-    const { auth ,setAuth } = useAuth();
-    
-    // const refreshToken = auth?.refreshToken
-    const refreshToken = cookies.rftoken.refreshToken
+    const refreshToken = cookies.rftoken
 
     const config = {
         headers: { Authorization: `Bearer ${refreshToken}`,'Content-Type': 'application/json' }
@@ -23,13 +17,9 @@ const useRefreshToken = () => {
             JSON.stringify({}),
             {
                 headers: { 'Content-Type': 'application/json',Authorization: `Bearer ${refreshToken}` },
-                withCredentials: false
+                withCredentials: true
             }
         );
-
-    setAuth(prev => {
-    return { ...prev, accessToken: response.data.access_token }
-    });
 
     let accessToken = response.data.access_token
     setCookie('token',{ accessToken })
