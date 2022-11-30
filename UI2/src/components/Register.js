@@ -27,9 +27,9 @@ const Register = () => {
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
 
-    useEffect(() => {
-        userRef.current.forcus();
-    }, [])
+    // useEffect(() => {
+    //     userRef.current.forcus();
+    // }, [])
 
     useEffect(() => {
         setValidName(USER_REGEX.test(user));

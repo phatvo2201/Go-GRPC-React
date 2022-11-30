@@ -22,10 +22,10 @@ const useRefreshToken = () => {
         );
 
     let accessToken = response.data.access_token
-    setCookie('token',{ accessToken })
+    setCookie('token',accessToken)
 
 
-        return response.data.accessToken;
+        return response.data.access_token;
     }
     return refresh;
 };

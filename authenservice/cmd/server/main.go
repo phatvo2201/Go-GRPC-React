@@ -23,7 +23,7 @@ func startGrpcServer() {
 	}
 	ctx := context.TODO()
 	//create jwt manager
-	jwtManger := utils.NewJwtManager(config.AccessTokenPublicKey, config.AccessTokenPrivateKey, 1500*time.Minute)
+	jwtManger := utils.NewJwtManager(config.AccessTokenPublicKey, config.AccessTokenPrivateKey, 60*time.Minute)
 	mongoConn := options.Client().ApplyURI(config.DBUri)
 	mongoClient, err := mongo.Connect(ctx, mongoConn)
 	if err != nil {
