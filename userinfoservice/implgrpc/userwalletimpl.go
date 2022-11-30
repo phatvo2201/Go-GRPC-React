@@ -56,7 +56,6 @@ func (us *UserServer) FindUserByEmail(ctx context.Context, in *userinfo.GetInfoR
 }
 func (us *UserServer) GetUserWalletInfo(ctx context.Context, in *userinfo.GetInfoRequestGmail) (*userinfo.Wallet, error) {
 	email := in.GetGmail()
-	//header := metadata.New(map[string]string{"Cookie": cookie})
 	walletUser, err := us.userService.FindWalletByOwner(email)
 	if err != nil {
 		log.Println("error when get user by email")

@@ -23,11 +23,11 @@ func NewUserService(userollection *mongo.Collection, walletcollection *mongo.Col
 }
 
 // SignInUsera implements UserService
+
 func (uc *UserServiceImpl) FindUserByEmail(email string) (*models.DBResponse, error) {
 	var user *models.DBResponse
 	query := bson.M{"email": email}
 	err := uc.usercollection.FindOne(uc.ctx, query).Decode(&user)
-	log.Println(user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &models.DBResponse{}, err
@@ -39,6 +39,7 @@ func (uc *UserServiceImpl) FindUserByEmail(email string) (*models.DBResponse, er
 }
 
 // SignUpUsera implements UserService
+
 func (uc *UserServiceImpl) FindUserById(id string) (*models.DBResponse, error) {
 	oid, _ := primitive.ObjectIDFromHex(id)
 
@@ -55,7 +56,8 @@ func (uc *UserServiceImpl) FindUserById(id string) (*models.DBResponse, error) {
 
 }
 
-// SignWalleta implements UserService
+// SignWallet implements UserService
+
 func (uc *UserServiceImpl) FindWalletByOwner(email string) (*models.DBWallet, error) {
 	user, err := uc.FindUserByEmail(email)
 	if err != nil {
@@ -73,13 +75,14 @@ func (uc *UserServiceImpl) FindWalletByOwner(email string) (*models.DBWallet, er
 }
 
 // VerifyEmaila implements UserService
+
 func (uc *UserServiceImpl) UpdateUser(id string, updateData *models.UpdateInput) (*models.DBResponse, error) {
 	var doc *bson.D
-	dbupdate, err := bson.Marshal(updateData)
+	dbUpdate, err := bson.Marshal(updateData)
 	if err != nil {
 		return nil, err
 	}
-	err = bson.Unmarshal(dbupdate, &doc)
+	err = bson.Unmarshal(dbUpdate, &doc)
 
 	obId, _ := primitive.ObjectIDFromHex(id)
 

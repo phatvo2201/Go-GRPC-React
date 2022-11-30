@@ -14,10 +14,6 @@ import (
 	"net/http"
 )
 
-const (
-	requestContextKey = 0
-)
-
 var (
 	grpcUserServerEndpoint = flag.String("grpc-user-server-endpoint", "host.docker.internal:9091", "gRPC user server endpoint")
 	grpcAuthServerEndpoint = flag.String("grpc-auth-server-endpoint", "host.docker.internal:9090", "gRPC auth server endpoint")

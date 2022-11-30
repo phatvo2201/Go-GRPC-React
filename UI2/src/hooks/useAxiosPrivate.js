@@ -13,11 +13,12 @@ const useAxiosPrivate = () => {
         token  = ""
     }else{
         token = cookies.token
-
     }
 
     useEffect(() => {
 
+
+        //use interceptor to add token
         const requestIntercept = axiosPrivate.interceptors.request.use(
             config => {
                 if (!config.headers['Authorization']) {
@@ -26,7 +27,7 @@ const useAxiosPrivate = () => {
                 return config;
             }, (error) => Promise.reject(error)
         );
-
+        //check if exp token and add new token
         const responseIntercept = axiosPrivate.interceptors.response.use(
             response => response,
             async (error) => {

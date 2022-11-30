@@ -48,6 +48,7 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *auth.SignUpUserRequest) 
 	user.Password = ui.Password
 	user.PasswordConfirm = ui.PasswordConfirm
 
+	//add new user by service
 	newUser, err := as.authService.SignUpUser(user)
 	if err != nil {
 		log.Println("cant not create usr at user implement ")
@@ -59,6 +60,7 @@ func (as *AuthServer) SignUpUser(c context.Context, ui *auth.SignUpUserRequest) 
 	walletUser := &models.CreateWalletRequest{}
 	walletUser.UserId = userId
 
+	//create wallet
 	newWallet, err := as.authService.SignWallet(walletUser)
 	if err != nil {
 		log.Println("cant not creae wallet")
@@ -110,6 +112,7 @@ func (as *AuthServer) SignInUser(ctx context.Context, req *auth.SignInUserReques
 		RefreshToken: refreshToken,
 	}
 
+	//add refresh and acesstoken to response header
 	cookie2 := http.Cookie{}
 	cookie2.Name = "rftoken"
 	cookie2.Value = refreshToken

@@ -26,6 +26,8 @@ func NewAuthService(userCollection *mongo.Collection, walletCollection *mongo.Co
 	return &AuthServiceImpl{userCollection, walletCollection, ctx}
 }
 
+// add wallet
+
 func (as *AuthServiceImpl) SignWallet(wallet *models.CreateWalletRequest) (*models.DBWallet, error) {
 	wallet.Balance = 10000
 	wallet.CreateAt = time.Now()
@@ -49,7 +51,7 @@ func (as *AuthServiceImpl) SignWallet(wallet *models.CreateWalletRequest) (*mode
 	if err != nil {
 		return nil, err
 	}
-	log.Println("da cai dat xong vi %s", newWallet.Currency)
+	log.Printf("da cai dat xong vi %s", newWallet.Currency)
 
 	return newWallet, nil
 

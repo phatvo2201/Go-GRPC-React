@@ -9,6 +9,8 @@ import LinkPage from './components/LinkPage';
 import RequireAuth from './components/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
 
+
+//role to test permission
 const ROLES = {
   'User': 2001,
   'Admin': 5150

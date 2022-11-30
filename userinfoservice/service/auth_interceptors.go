@@ -52,6 +52,7 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	}
 }
 func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string, email string) error {
+	//check accessible role of request if not in interceptor list go throught
 	accessibleRoles, ok := interceptor.accessibleRoles[method]
 	if !ok {
 		// everyone can access
@@ -63,12 +64,12 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		return status.Errorf(codes.Unauthenticated, "can not access context")
 
 	}
-	autheninfo := md["authorization"]
-	if len(autheninfo) == 0 {
+	authenInfo := md["authorization"]
+	if len(authenInfo) == 0 {
 		return status.Errorf(codes.Unauthenticated, "access token is not provider %s", method)
 	}
 
-	accessToken := autheninfo[0]
+	accessToken := authenInfo[0]
 
 	// using the function
 	if strings.Contains(accessToken, "Bearer ") {
